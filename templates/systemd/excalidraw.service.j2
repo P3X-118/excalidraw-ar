@@ -19,15 +19,15 @@ DefaultDependencies=no
 
 [Service]
 Type=simple
-Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ excalidraw_identifier }} 2>/dev/null || true'
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ excalidraw_identifier }} 2>/dev/null || true'
+Environment="HOME={{ sysd_docker_unit_home_path }}"
+ExecStartPre=-{{ sysd_docker_host_sh }} -c '{{ sysd_docker_host_command }} stop -t {{ sysd_docker_grace_stop }} {{ excalidraw_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ sysd_docker_host_sh }} -c '{{ sysd_docker_host_command }} rm {{ excalidraw_identifier }} 2>/dev/null || true'
 
 {#
   When using the pulled image, root access with write permission is required.
   See: https://github.com/excalidraw/excalidraw/blob/master/Dockerfile
 #}
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+ExecStartPre={{ sysd_docker_host_command }} create \
       --rm \
       --name={{ excalidraw_identifier }} \
       --log-driver=none \
@@ -59,13 +59,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {{ excalidraw_container_image_self_build_name if excalidraw_container_image_self_build else excalidraw_container_image }}
 
 {% for network in excalidraw_container_additional_networks %}
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ excalidraw_identifier }}
+ExecStartPre={{ sysd_docker_host_command }} network connect {{ network }} {{ excalidraw_identifier }}
 {% endfor %}
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ excalidraw_identifier }}
+ExecStart={{ sysd_docker_host_command }} start --attach {{ excalidraw_identifier }}
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ excalidraw_identifier }} 2>/dev/null || true'
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ excalidraw_identifier }} 2>/dev/null || true'
+ExecStop=-{{ sysd_docker_host_sh }} -c '{{ sysd_docker_host_command }} stop -t {{ sysd_docker_grace_stop }} {{ excalidraw_identifier }} 2>/dev/null || true'
+ExecStop=-{{ sysd_docker_host_sh }} -c '{{ sysd_docker_host_command }} rm {{ excalidraw_identifier }} 2>/dev/null || true'
 
 Restart=always
 RestartSec=30

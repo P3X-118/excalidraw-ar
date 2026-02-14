@@ -19,8 +19,8 @@
         force_source: "{{ excalidraw_basic_auth_apache_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
         force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else excalidraw_basic_auth_apache_container_image_force_pull }}"
       register: result
-      retries: "{{ devture_playbook_help_container_retries_count }}"
-      delay: "{{ devture_playbook_help_container_retries_delay }}"
+      retries: "{{ container_retry }}"
+      delay: "{{ container_retry_delay }}"
       until: result is not failed
 
     # We store the password in a file and make the `htpasswd` tool read it from there,
@@ -36,7 +36,7 @@
     - name: Generate htpasswd from username/password
       ansible.builtin.command:
         cmd: >-
-          {{ devture_systemd_docker_base_host_command_docker }} run
+          {{ sysd_docker_host_command }} run
           --rm
           --user={{ excalidraw_uid }}:{{ excalidraw_gid }}
           --cap-drop=ALL
